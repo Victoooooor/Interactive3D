@@ -60,18 +60,18 @@ class SoftSquare(App):
         squareshape.AddConstraints(const)
 
     def Update(self):
-        #
-        self.objpos = self.get_pose()
+        temp = self.get_pose()
 
-        if self.objpos is None:
-            self.previous = Vector()
+
+        if temp is None:
+            None
         else:
+            self.objpos, self.radius = temp
             self.objpos.scale(self.world.size)
             force = (self.objpos - self.previous) * self.strength
             for particle in self.world.particles:
                 if self.objpos.distance(particle.position) < self.radius:
                     particle.ApplyForce(force)
-            # if game.mouse.get_pressed()[0]:
             self.previous = self.objpos
         #
         if game.key.get_pressed()[game.K_ESCAPE]:

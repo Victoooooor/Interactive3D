@@ -28,6 +28,8 @@ class CamPos(object):
             cv2.imshow('get_pos', final)
         if len(circles) > 0:
             x, y = circles[0][0]
-            return Vector(x/self.w,y/self.h)
+            radius = circles[0][1]
+
+            return Vector(x/self.w,y/self.h), radius
         else:
             return None

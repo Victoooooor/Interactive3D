@@ -9,13 +9,13 @@ from VoltricDP.CamHandler import CamPos
 if __name__ == "__main__":
 
     # Webcam & Canvas Dim
-    width = 1280
-    height = 720
+    width = 1920
+    height = 1080
 
     # Define Color range in HSV
-    yellow = np.uint8([[[255,255,0]]])  # in rgb
-    hsvGreen = cv2.cvtColor(yellow, cv2.COLOR_RGB2HSV)
-    lower = hsvGreen[0][0][0] - 20, 111, 111
+    color = np.uint8([[[128,0,128]]])  # in rgb
+    hsvGreen = cv2.cvtColor(color, cv2.COLOR_RGB2HSV)
+    lower = hsvGreen[0][0][0] - 20, 127, 127
     upper = hsvGreen[0][0][0] + 20, 255, 255
 
     noise = (50,50)
