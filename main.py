@@ -1,9 +1,6 @@
-import random
-
 import cv2
 import numpy as np
 
-from VoltricDP import *
 from VoltricDP.Preprocess import ColorMask
 from VoltricDP.SoftSquare import SoftSquare
 from VoltricDP.CamHandler import CamPos
