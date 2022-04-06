@@ -1,17 +1,17 @@
 import math
 
-from .Vector import *
+from .V2D import *
 from .Material import *
 
 
-class Particle:
-    velocity = Vector(0.0, 0.0)
-    acceleration = Vector(0.0, 0.0)
+class Mass:
+    velocity = V2D()
+    acceleration = V2D()
 
     def __init__(self, world, x=0.0, y=0.0, material=None):
         self.world = world
-        self.position = Vector(x, y)
-        self.previous = Vector(x, y)
+        self.position = V2D(x, y)
+        self.previous = V2D(x, y)
         if material == None:
             self.material = Material()
         else:
@@ -24,7 +24,7 @@ class Particle:
         self.previous = self.position
         self.position = self.velocity + self.acceleration * self.world.delta ** 2.0
         self.velocity = self.position - self.previous
-        self.acceleration = Vector.zero()
+        self.acceleration = V2D.zero()
 
     def Accelerate(self, rate):
         self.acceleration += rate
@@ -38,7 +38,7 @@ class Particle:
             self.position += impulse / self.material.mass
 
     def ResetForces(self):
-        self.acceleration = Vector.zero()
+        self.acceleration = V2D.zero()
 
     def Restrain(self):
         #

@@ -1,6 +1,6 @@
 import math
-from .Vector import *
-from .Particle import *
+from .V2D import *
+from .Mass import *
 
 
 class Constraint:
@@ -19,12 +19,14 @@ class Constraint:
 
     def Relax(self):
         #
-        D = self.node2.position - self.node1.position
-        F = 0.5 * self.stiff * (D.length() - self.target) * D.normalized()
-        if self.node1.material.mass != 0.0 and not self.node2.material.mass:
-            self.node1.ApplyImpulse(2.0 * +F)
-        elif not self.node1.material.mass and self.node2.material.mass != 0.0:
-            self.node2.ApplyImpulse(2.0 * -F)
-        else:
-            self.node1.ApplyImpulse(+F)
-            self.node2.ApplyImpulse(-F)
+        displace = self.node2.position - self.node1.position
+        length = abs(displace)
+        if displace and length > 0:
+            F = 0.5 * self.stiff * (length - self.target) * displace / length
+            if self.node1.material.mass != 0.0 and not self.node2.material.mass:
+                self.node1.ApplyImpulse(2.0 * +F)
+            elif not self.node1.material.mass and self.node2.material.mass != 0.0:
+                self.node2.ApplyImpulse(2.0 * -F)
+            else:
+                self.node1.ApplyImpulse(+F)
+                self.node2.ApplyImpulse(-F)

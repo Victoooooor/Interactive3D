@@ -4,9 +4,9 @@ from .Composite import *
 
 class World:
     #
-    size        = Vector(0.0, 0.0)  # world size/boundaries
-    hsize       = Vector(0.0, 0.0)  # half-size world size/boundaries
-    gravity     = Vector(0.0, 0.0)  # global gravitational acceleration
+    size        = V2D(0.0, 0.0)  # world size/boundaries
+    hsize       = V2D(0.0, 0.0)  # half-size world size/boundaries
+    gravity     = V2D(0.0, 0.0)  # global gravitational acceleration
     step        = 0                 # time step
     delta       = 0.0               # delta time (1.0 / time step)
     #
@@ -14,7 +14,7 @@ class World:
     constraints = list()            # list of all constraints being simulated
     composites  = list()            # list of all composite shapes being simulated
 
-    def __init__(self, s=Vector(0.0, 0.0), g=Vector(0.0, 9.8), t=8):
+    def __init__(self, s=V2D(0.0, 0.0), g=V2D(0.0, 9.8), t=8):
         self.size      = s
         self.hsize     = 0.5 * s
         self.gravity   = g
@@ -36,7 +36,7 @@ class World:
                 constraint.Relax()
 
     def AddParticle(self, x, y, mat=None):
-        particle = Particle(self, x, y, mat)
+        particle = Mass(self, x, y, mat)
         self.particles.append(particle)
         return particle
 

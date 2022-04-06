@@ -5,9 +5,9 @@ class SoftSquare(App):
 
     def __init__(self, input_func, t='Application', x=960, y=720, f=30, c=[(255, 0, 0), (255, 255, 0), (255, 0, 255)],
                  res=16, fill=True):
-        self.world = World(Vector(x / 1.0, y / 1.0), Vector(0, 2), 2)
-        self.objpos = Vector()
-        self.previous = Vector()
+        self.world = World(V2D(x / 1.0, y / 1.0), V2D(0, 2), 2)
+        self.objpos = V2D()
+        self.previous = V2D()
         self.strength = 3.0
         self.radius = 30
         self.step = res
@@ -27,14 +27,14 @@ class SoftSquare(App):
         super().__init__(t=t, x=x, y=y, f=f)
 
     #
-    def Initialize(self):
+    def init(self):
         #
         squareshape = self.world.AddComposite()
 
         nodes = list()
         const = list()
 
-        size = Vector((self.maxX - self.minX) / self.step, (self.maxY - self.minY) / self.step)
+        size = V2D((self.maxX - self.minX) / self.step, (self.maxY - self.minY) / self.step)
 
         # generate particles in a grid
         for y in range(self.step):
@@ -59,9 +59,8 @@ class SoftSquare(App):
         squareshape.AddParticles(nodes)
         squareshape.AddConstraints(const)
 
-    def Update(self):
+    def update(self):
         temp = self.get_pose()
-
 
         if temp is None:
             None
@@ -75,11 +74,11 @@ class SoftSquare(App):
             self.previous = self.objpos
         #
         if game.key.get_pressed()[game.K_ESCAPE]:
-            self.Exit()
+            self.exit()
         self.world.Simulate()
 
     #
-    def Render(self):
+    def render(self):
         #
         self.screen.fill((24, 24, 24))
 
@@ -91,7 +90,7 @@ class SoftSquare(App):
                               i * self.step + j + 1,
                               (i + 1) * self.step + j + 1,
                               (i + 1) * self.step + j]
-                    points = [self.world.particles[p].position.to_tuple() for p in points]
+                    points = [tuple(self.world.particles[p].position) for p in points]
                     cur_color = tuple(
                         map(lambda a, b, c: a + i * b + j * c, self.color[0], self.color[1], self.color[2]))
                     game.draw.polygon(self.screen, cur_color, points)
@@ -103,13 +102,13 @@ class SoftSquare(App):
                     cur_color = tuple(
                         map(lambda a, b, c: a + i * b + j * c, self.color[0], self.color[1], self.color[2]))
                     points = [i * self.step + j,
-                           i * self.step + j + 1,
-                           (i + 1) * self.step + j]
-                    points = [self.world.particles[p].position.to_tuple() if p < self.step * self.step else None for p in points]
+                              i * self.step + j + 1,
+                              (i + 1) * self.step + j]
+                    points = [tuple(self.world.particles[p].position) if p < self.step * self.step else None
+                              for p in points]
                     if i < self.step - 1:
                         game.draw.line(self.screen, cur_color, points[0], points[2], 2)
                     if j < self.step - 1:
                         game.draw.line(self.screen, cur_color, points[0], points[1], 2)
-
 
         game.display.update()

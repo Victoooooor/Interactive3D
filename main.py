@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Initialize SoftBody Structure
 
     app = SoftSquare(CP.get_pos, "Main", width, height, 30, fill = False)
-    app.Run()
+    app.run()
 
     # while cv2.waitKey(1) & 0xFF != ord('q'):
     #     CP.get_pos(draw=True)

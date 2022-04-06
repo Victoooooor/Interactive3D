@@ -1,6 +1,6 @@
 import cv2
 
-from VoltricDP import Vector
+from VoltricDP import V2D
 
 
 class CamPos(object):
@@ -30,6 +30,6 @@ class CamPos(object):
             x, y = circles[0][0]
             radius = circles[0][1]
 
-            return Vector(x/self.w,y/self.h), radius
+            return V2D(x / self.w, y / self.h), radius
         else:
             return None

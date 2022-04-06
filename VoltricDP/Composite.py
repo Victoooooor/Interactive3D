@@ -8,7 +8,7 @@ class Composite:
 
     def __init__(self, *params):
         for param in self.traverse(params):
-            if isinstance(param, Particle):
+            if isinstance(param, Mass):
                 self.particles.append(param)
             elif isinstance(param, Constraint):
                 self.constraints.append(param)
@@ -16,7 +16,7 @@ class Composite:
 
     def AddParticles(self, *particles):
         for particle in particles:
-            if isinstance(particle, Particle):
+            if isinstance(particle, Mass):
                 self.particles.append(particle)
 
     def AddConstraints(self, *constraints):

@@ -14,9 +14,9 @@ class App:
         self.size = (x, y)
         self.center = (x // 2, y // 2)
         self.framerate = f
-        self.Initialize()
+        self.init()
 
-    def Run(self):
+    def run(self):
         game.init()
         game.display.set_caption(self.title)
         self.screen = game.display.set_mode(self.size, self.flags)
@@ -24,27 +24,27 @@ class App:
 
         while self.running:
             for event in game.event.get():
-                self.HandleEvent(event)
-            self.Update()
-            self.Render()
+                self.handler(event)
+            self.update()
+            self.render()
             game.time.delay(round(1000 / self.framerate))
-        self.CleanUp()
+        self.clean()
 
-    def HandleEvent(self, event):
+    def handler(self, event):
         if event.type == game.QUIT:
             self.running = False
 
-    def CleanUp(self):
+    def clean(self):
         game.quit()
 
-    def Exit(self):
+    def exit(self):
         self.running = False
 
-    def Initialize(self):
+    def init(self):
         pass
 
-    def Update(self):
+    def update(self):
         pass
 
-    def Render(self):
+    def render(self):
         pass
