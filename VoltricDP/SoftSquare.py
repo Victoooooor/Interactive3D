@@ -1,21 +1,29 @@
 from . import *
 
 
-class SoftSquare(App):
+class SoftSquare(SoftBase):
 
-    def __init__(self, input_func, t='Application', x=960, y=720, f=30, c=[(255, 0, 0), (255, 255, 0), (255, 0, 255)],
+    def __init__(self, input_func, mat,
+                 title='Soft Square', x=1280, y=720, f=30,
+                 c=[(255, 0, 0), (255, 255, 0), (255, 0, 255)],
                  res=16, fill=True):
-        self.world = World(V2D(x / 1.0, y / 1.0), V2D(0, 2), 2)
-        self.objpos = V2D()
-        self.previous = V2D()
-        self.strength = 3.0
-        self.radius = 30
-        self.step = res
-        self.fill = fill
-        self.color = c
 
-        self.color[1] = tuple(map(lambda i, j: (i - j) // (self.step - 1), self.color[1], self.color[0]))
-        self.color[2] = tuple(map(lambda i, j: (i - j) // (self.step - 1), self.color[2], self.color[0]))
+        self.world = World(V2D(x / 1.0, y / 1.0), V2D(0, 2), 2)
+        self.curr = V2D()
+        self.prev = V2D()
+
+        # default m/f/b val
+        self.mat = mat
+
+        self.color = c
+        self.res = res
+        self.fill = fill
+
+        self.scale = 1.5
+        self.radius = 20
+
+        self.color[1] = tuple(map(lambda i, j: (i - j) // (self.res - 1), self.color[1], self.color[0]))
+        self.color[2] = tuple(map(lambda i, j: (i - j) // (self.res - 1), self.color[2], self.color[0]))
 
         self.minX = x // 5
         self.maxX = self.minX * 4
@@ -23,92 +31,95 @@ class SoftSquare(App):
         self.maxY = y * 3 // 4
 
         self.get_pose = input_func
-        # Initialize App
-        super().__init__(t=t, x=x, y=y, f=f)
+
+        # Initialize Render
+        super().__init__(title=title, x=x, y=y, f=f)
 
     #
-    def init(self):
-        #
-        squareshape = self.world.AddComposite()
+    def _init(self):
+        nodes = []
+        constraints = []
 
-        nodes = list()
-        const = list()
+        grid = V2D((self.maxX - self.minX) / self.res, (self.maxY - self.minY) / self.res)
 
-        size = V2D((self.maxX - self.minX) / self.step, (self.maxY - self.minY) / self.step)
+        # node
+        for y in range(self.res):
+            nodes.append([])
+            for x in range(self.res):
+                nodes[y].append(self.world.add_node(self.minX + (x * grid.x),
+                                                    self.minY + (y * grid.y),
+                                                    self.mat if y else
+                                                    (0.0,) + self.mat[1:]
+                                                    ))
 
-        # generate particles in a grid
-        for y in range(self.step):
-            nodes.append(list())
-            for x in range(self.step):
-                nodes[y].append(self.world.AddParticle(self.minX + x * size.x, self.minY + y * size.y))
-                if not y:
-                    nodes[y][x].material.mass = 0.0
-                # elif y == self.step - 1:
-                #     nodes[y][x].ApplyForce(Vector(50.0, random.random() * -500.0))
+        # string
+        for y in range(self.res):
+            for x in range(1, self.res):
+                constraints.append(self.world.add_edge(nodes[y][x - 1], nodes[y][x], 1.0))
+        for y in range(1, self.res):
+            for x in range(self.res):
+                constraints.append(self.world.add_edge(nodes[y - 1][x], nodes[y][x], 1.0))
 
-        # add horizontal constraints
-        for y in range(self.step):
-            for x in range(1, self.step):
-                const.append(self.world.AddConstraint(nodes[y][x - 1], nodes[y][x], 1.0))
+        obj = self.world.add_body()
+        obj.add_nodes(nodes)
+        obj.add_edges(constraints)
 
-        # add vertical constraints
-        for y in range(1, self.step):
-            for x in range(self.step):
-                const.append(self.world.AddConstraint(nodes[y - 1][x], nodes[y][x], 1.0))
-
-        squareshape.AddParticles(nodes)
-        squareshape.AddConstraints(const)
-
-    def update(self):
+    def _update(self):
         temp = self.get_pose()
 
         if temp is None:
             None
         else:
-            self.objpos, self.radius = temp
-            self.objpos.scale(self.world.size)
-            force = (self.objpos - self.previous) * self.strength
-            for particle in self.world.particles:
-                if self.objpos.distance(particle.position) < self.radius:
-                    particle.ApplyForce(force)
-            self.previous = self.objpos
-        #
-        if game.key.get_pressed()[game.K_ESCAPE]:
-            self.exit()
-        self.world.Simulate()
+            self.curr, self.radius = temp
+            if self.curr.x < 1 and self.curr.y < 1:
+                self.curr.scale(self.world.size)
+            force = (self.curr - self.prev) * self.scale
+            for node in self.world.nodes:
+                dis = max(self.curr.distance(node.curr), 1)
+                temp = self.radius / dis
+                if temp > 1:
+                    node.add_force(force)
+                if temp > 2:
+                    repel = (node.curr - self.curr) * temp
+                    node.add_force(repel)
+            self.prev = self.curr
 
-    #
-    def render(self):
-        #
-        self.screen.fill((24, 24, 24))
+        if game.key.get_pressed()[game.K_ESCAPE]:
+            self._handler(game.QUIT)
+
+        self.world.step()
+
+    def _render(self):
+        # background color
+        self.screen.fill((0, 0, 0))
 
         if self.fill:  # Display Colored Block
 
-            for i in range(self.step - 1):
-                for j in range(self.step - 1):
-                    points = [i * self.step + j,
-                              i * self.step + j + 1,
-                              (i + 1) * self.step + j + 1,
-                              (i + 1) * self.step + j]
-                    points = [tuple(self.world.particles[p].position) for p in points]
+            for i in range(self.res - 1):
+                for j in range(self.res - 1):
+                    points = [i * self.res + j,
+                              i * self.res + j + 1,
+                              (i + 1) * self.res + j + 1,
+                              (i + 1) * self.res + j]
+                    points = [tuple(self.world.nodes[p].curr) for p in points]
                     cur_color = tuple(
                         map(lambda a, b, c: a + i * b + j * c, self.color[0], self.color[1], self.color[2]))
                     game.draw.polygon(self.screen, cur_color, points)
 
         else:  # Display Skeleton
 
-            for i in range(self.step):
-                for j in range(self.step):
+            for i in range(self.res):
+                for j in range(self.res):
                     cur_color = tuple(
                         map(lambda a, b, c: a + i * b + j * c, self.color[0], self.color[1], self.color[2]))
-                    points = [i * self.step + j,
-                              i * self.step + j + 1,
-                              (i + 1) * self.step + j]
-                    points = [tuple(self.world.particles[p].position) if p < self.step * self.step else None
+                    points = [i * self.res + j,
+                              i * self.res + j + 1,
+                              (i + 1) * self.res + j]
+                    points = [tuple(self.world.nodes[p].curr) if p < self.res * self.res else None
                               for p in points]
-                    if i < self.step - 1:
+                    if i < self.res - 1:
                         game.draw.line(self.screen, cur_color, points[0], points[2], 2)
-                    if j < self.step - 1:
+                    if j < self.res - 1:
                         game.draw.line(self.screen, cur_color, points[0], points[1], 2)
 
         game.display.update()

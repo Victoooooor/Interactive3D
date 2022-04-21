@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class ColorMask:
     def __init__(self,
                  lower=[15, 127, 127],
@@ -26,9 +27,9 @@ class ColorMask:
         contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for contour in contours:
             center = cv2.moments(contour)
-            cX = round(center["m10"] / center["m00"])
-            cY = round(center["m01"] / center["m00"])
-            centers.append((cX, cY))
+            cx = round(center["m10"] / center["m00"])
+            cy = round(center["m01"] / center["m00"])
+            centers.append((cx, cy))
         return contours, centers
 
     def get_rec(self, contours):

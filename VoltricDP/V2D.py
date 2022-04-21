@@ -4,8 +4,31 @@ import math
 class V2D:
 
     def __init__(self, x=0.0, y=0.0):
-        self.x = x
-        self.y = y
+        self.val = [x, y]
+
+    @property
+    def x(self):
+        return self.val[0]
+
+    @x.setter
+    def x(self, value):
+        self.val[0] = value
+
+    @x.deleter
+    def x(self):
+        del self.val[0]
+
+    @property
+    def y(self):
+        return self.val[1]
+
+    @y.setter
+    def y(self, value):
+        self.val[1] = value
+
+    @y.deleter
+    def y(self):
+        del self.val[1]
 
     def __abs__(self):
         return math.sqrt(self.x ** 2 + self.y ** 2)
