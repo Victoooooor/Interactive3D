@@ -47,6 +47,9 @@ if __name__ == "__main__":
 
     # Use mouse
     # main = SoftSquare(MP, (m, f, b), "Main", width, height, 30, fill=False)
+
+    # main.load_alpha('./mask1920x1080.png')
+    main.load_alpha('./A9em5.png')
     main.run()
 
     # while cv2.waitKey(1) & 0xFF != ord('q'):

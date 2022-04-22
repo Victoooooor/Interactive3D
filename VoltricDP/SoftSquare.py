@@ -91,7 +91,7 @@ class SoftSquare(SoftBase):
 
     def _render(self):
         # background color
-        self.screen.fill((0, 0, 0))
+        self.background.fill((0, 0, 0))
 
         if self.fill:  # Display Colored Block
 
@@ -104,7 +104,7 @@ class SoftSquare(SoftBase):
                     points = [tuple(self.world.nodes[p].curr) for p in points]
                     cur_color = tuple(
                         map(lambda a, b, c: a + i * b + j * c, self.color[0], self.color[1], self.color[2]))
-                    game.draw.polygon(self.screen, cur_color, points)
+                    game.draw.polygon(self.background, cur_color, points)
 
         else:  # Display Skeleton
 
@@ -118,8 +118,15 @@ class SoftSquare(SoftBase):
                     points = [tuple(self.world.nodes[p].curr) if p < self.res * self.res else None
                               for p in points]
                     if i < self.res - 1:
-                        game.draw.line(self.screen, cur_color, points[0], points[2], 2)
+                        game.draw.line(self.background, cur_color, points[0], points[2], 2)
                     if j < self.res - 1:
-                        game.draw.line(self.screen, cur_color, points[0], points[1], 2)
+                        game.draw.line(self.background, cur_color, points[0], points[1], 2)
 
-        game.display.update()
+        if self.alpha is not None:
+            # print("mask"
+            # print(self.alpha)
+            self.background.blit(self.alpha, (0, 0), None, game.BLEND_RGBA_MULT)
+
+        self.screen.blit(self.background, (0, 0))
+
+        game.display.flip()
