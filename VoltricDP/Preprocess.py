@@ -23,13 +23,19 @@ class ColorMask:
         return mask
 
     def get_cc(self, mask):
+
         centers = []
         contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        for contour in contours:
-            center = cv2.moments(contour)
-            cx = round(center["m10"] / center["m00"])
-            cy = round(center["m01"] / center["m00"])
-            centers.append((cx, cy))
+        try:
+            for contour in contours:
+                center = cv2.moments(contour)
+                cx = round(center["m10"] / center["m00"])
+                cy = round(center["m01"] / center["m00"])
+                centers.append((cx, cy))
+        except ZeroDivisionError:
+            centers = []
+            contours = []
+            return contours, centers
         return contours, centers
 
     def get_rec(self, contours):

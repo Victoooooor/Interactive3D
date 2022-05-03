@@ -35,3 +35,4 @@ class CamPos(object):
             return V2D(x / self.w, y / self.h), radius
         else:
             return None
+
