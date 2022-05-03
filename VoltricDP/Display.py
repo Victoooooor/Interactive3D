@@ -3,6 +3,7 @@ import os
 import cv2
 import numpy as np
 
+
 class Display(object):
 
     def __init__(self, width=1920, height=1080):
@@ -35,7 +36,7 @@ class Display(object):
     # wrapper to load all slices
     def load(self, path):
         for i in range(10):
-            full_path = os.path.join(path, str(i+1)+'-01.png')
+            full_path = os.path.join(path, str(i + 1) + '-01.png')
             try:
                 slice = cv2.imread(full_path)
             except:
@@ -49,6 +50,8 @@ class Display(object):
         for i, f in enumerate(frames):
             if f is None:
                 continue
+            if i >= len(self.slices) // 2:
+                f = cv2.flip(f, 1)
             temp_mask = np.zeros_like(total)
             cv2.fillConvexPoly(temp_mask, self.approx[i], (255,) * 3)
             temp_mask = cv2.bitwise_not(temp_mask)
@@ -57,5 +60,8 @@ class Display(object):
             out = cv2.warpPerspective(f, self.slices[i], (self.canvas.shape[1], self.canvas.shape[0]))
 
             total = cv2.bitwise_or(out, total)
+
+        total = cv2.line(total, (0, self.height - 11), (self.width - 1, self.height - 11),
+                       color=[128, 0, 128], thickness=20)
 
         return total

@@ -20,6 +20,7 @@ if __name__ == '__main__':
     src2 = cv2.imread('test2.jpg')
 
     out = DD.produce_full([src, src2])
+    print(DD.approx)
     cv2.imshow('window', out)
     cv2.waitKey()
 
