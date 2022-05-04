@@ -21,7 +21,7 @@ class DemoBase:
         self.window = window_name
 
         self.tran = trans_func
-        self.slice_co = self.tran.width // 10
+        self.slice_co = self.tran.width // 9
 
         self.get_frame = get_frame
         self.sample = self.get_frame()

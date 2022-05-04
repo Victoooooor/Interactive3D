@@ -23,7 +23,7 @@ class Demo2(DemoBase):
 
         x_slice = x // self.slice_co
 
-        depth = self.tran.height - total[1]
+        depth = self.tran.height - total[1] - 1
         # slices = []
         flat = self.canvas.copy()
 
