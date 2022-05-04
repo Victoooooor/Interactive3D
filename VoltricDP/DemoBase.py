@@ -51,7 +51,7 @@ class DemoBase:
     def seg_frame(self):
         frame = self.get_frame()
         frame[: 550, :, :] = 0
-        frame[600:, :, :] = 0   #660
+        frame[680:, :, :] = 0   #660
         frame[:,:256,:] = 0
         frame[:,850:, :] = 0
         return frame
