@@ -35,6 +35,8 @@ class Display(object):
 
     # wrapper to load all slices
     def load(self, path):
+        self.x_min = self.width
+        self.x_max = 0
         for i in range(10):
             full_path = os.path.join(path, str(i + 1) + '-01.png')
             try:
@@ -44,11 +46,17 @@ class Display(object):
                 exit(-1)
             self.load_slice(slice)
 
+        for a in self.approx:
+            for p in a:
+                self.x_max = max(self.x_max, p[0])
+                self.x_min = min(self.x_min, p[0])
+
     # provide all slices in list, use None if blank
     def produce_full(self, frames):
         total = self.canvas.copy()
         for i, f in enumerate(frames):
             if f is None:
+                # print(i)
                 continue
             if i >= len(self.slices) // 2:
                 f = cv2.flip(f, 1)
@@ -60,8 +68,8 @@ class Display(object):
             out = cv2.warpPerspective(f, self.slices[i], (self.canvas.shape[1], self.canvas.shape[0]))
 
             total = cv2.bitwise_or(out, total)
-
-        total = cv2.line(total, (0, self.height - 11), (self.width - 1, self.height - 11),
-                       color=[128, 0, 128], thickness=20)
+        thickness = 6
+        total = cv2.line(total, (self.x_min, self.height - 1 - thickness//2), (self.x_max, self.height - 1 - thickness//2),
+                       color=[255, 255, 255], thickness=thickness)
 
         return total

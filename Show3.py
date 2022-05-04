@@ -9,27 +9,27 @@ from VoltricDP.Demo3 import Demo3
 
 slices_path = './slices'
 
-width = 1920
-height = 1080
+width = 1280
+height = 720
 
 top_dim = 1000
 
 color = np.uint8([[[128, 0, 128]]])
-vid = cv2.VideoCapture(0)
+vid = cv2.VideoCapture(1)
 vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
 # Function for frame
 get_frame = lambda: cv2.flip(vid.read()[1], 1)
 
-field = np.float32([[300, 200], [200, height - 201], [width - 301, 200], [width - 201, height - 201]])
+field = np.float32([[427, 555], [410, 656], [784, 557], [788, 645]])
 tp = TransformPos(1000, 1000)
 tp.def_field(field)
 field = np.expand_dims(field, axis=1)
 
 print(tp.get_top_pos(field))
 
-d1 = Demo3(color, get_frame, tp)
+d1 = Demo3(color, get_frame, tp, coeff = 60)
 
 DD = Display()
 DD.load(slices_path)
@@ -49,10 +49,12 @@ if __name__ == "__main__":
         cv2.waitKey(1000 // 120)
 
         # canvas = d1.sample.copy()
-        frame = d1.get_frame()
-
-        mask = d1.CM.get_mask(frame)
-        points = d1.get_loc(frame, mask)  # x, y
+        frame = d1.seg_frame()
+        # frame[: 800, :, :] = 0
+        mask = d1.bright_mask(frame)
+        # mask = d1.CM.get_mask(frame)
+        # points = d1.get_loc(frame, mask)  # x, y
+        points = d1.get_loc(frame, mask)
         slices = d1.get_slices(points)
         # print(centered)
         # for p in points:
@@ -65,5 +67,11 @@ if __name__ == "__main__":
         out = DD.produce_full(slices)
 
         cv2.imshow('window', out)
+        cv2.imshow('frame', frame)
+
+        # cv2.imshow('grey', grey)
+        cv2.imshow('binary', mask)
+        # cv2.imshow('mask', mask)
+        cv2.imshow('hrizontal', d1.get_image(frame, mask))
         # cv2.imshow('frame', frame)
         # cv2.imshow('mask', mask)

@@ -25,7 +25,7 @@ class ColorMask:
     def get_cc(self, mask):
 
         centers = []
-        contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         try:
             for contour in contours:
                 center = cv2.moments(contour)

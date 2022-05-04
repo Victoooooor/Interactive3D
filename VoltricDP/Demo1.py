@@ -20,12 +20,12 @@ class Demo1(DemoBase):
         total = [x // length for x in total]
 
         x = total[0]
-
+        # print(locs)
         x_slice = x // self.slice_co
 
         depth = self.tran.height - total[1] - 1
         slices = []
-
+        # print(x, self.slice_co)
         for i in range(10):
             curr = self.canvas.copy()
 
@@ -42,6 +42,7 @@ class Demo1(DemoBase):
                                   [right, top]])
                 curr = cv2.fillConvexPoly(curr, shape, (255,) * 3)
                 slices.append(curr)
+                # slices.append(None)
 
             elif i > x_slice + 1:
                 x_shift = x + self.slice_co
@@ -58,6 +59,5 @@ class Demo1(DemoBase):
                 slices.append(curr)
 
             else:
-                slices.append(None)
-
+                slices.append(curr)
         return slices
